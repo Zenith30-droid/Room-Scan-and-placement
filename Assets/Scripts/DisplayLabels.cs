@@ -12,11 +12,17 @@ public class DisplayLabels : MonoBehaviour
     public MRUKAnchor.SceneLabels labelFilter;
     public TMPro.TextMeshPro debugText;
 
+    private bool isLogoDetected;
+
+    public LayerMask interactableLayer;
+
     public void Update()
     {
         Ray ray = new Ray(rayStartpoint.position, rayStartpoint.forward);
 
         MRUKRoom room = MRUK.Instance.GetCurrentRoom();
+
+        
 
         bool hasHit = room.Raycast(ray, rayLength, LabelFilter.Included(labelFilter), out RaycastHit hit, out MRUKAnchor anchor);
 
@@ -33,5 +39,21 @@ public class DisplayLabels : MonoBehaviour
 
             debugText.text = label.ToString();
         }
+
+
+        RaycastHit hit1;
+        Ray ray1 = new Ray(rayStartpoint.position, rayStartpoint.forward);
+
+        if (Physics.Raycast(ray1, out hit, 100, interactableLayer) && !isLogoDetected)
+        {
+            isLogoDetected = true;
+            Debug.Log("Hit: " + hit.collider.name);
+
+            if(hit.collider.gameObject.TryGetComponent(out IInteractable onInteract))
+                onInteract.OnInteraction();
+
+            // Handle hit object interaction here
+        }
+
     }
 }
