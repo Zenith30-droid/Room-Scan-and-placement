@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class Logo : MonoBehaviour, IInteractable
 {
-    [SerializeField] private GameObject drone;
+    [SerializeField] private GameObject droneSpawnPoint;
 
     // Start is called before the first frame update
     void Awake()
     {
-        drone.SetActive(false);
         
     }
 
     public void OnInteraction()
     {
-        GameManager.Instance.Drone = drone;
-        drone.SetActive(true);
+        GameManager.Instance.SpawnDrone(droneSpawnPoint.transform);
     }
 }
