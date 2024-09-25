@@ -51,31 +51,55 @@ public class GameManager : MonoBehaviour
 
     public void MovementDebug()
     {
-        inputAxis = move.ReadValue<Vector2>();
-
-        Debug.LogError($"Input Data {inputAxis.x}");
+        
     }
 
     public void SpawnDrone(Transform spawnTransform)
     {
-        currentDrone = Instantiate(Drone, spawnTransform.position, spawnTransform.rotation);
+        currentDrone = Instantiate(Drone, spawnTransform.position, Quaternion.identity);
     }
 
     private void Move()
     {
-        Vector3 moveDirection = new Vector3(inputAxis.x, 0, inputAxis.y);
-        if (moveDirection.magnitude > 1)
-            moveDirection.Normalize();
+        Vector2 leftStickAxis = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+        Vector2 rightStickAxis = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick);
 
-        moveDirection = currentDrone.transform.TransformDirection(moveDirection);
-        moveDirection.y = 0; // Keep the movement horizontal
+        Vector3 moveDirection = new Vector3(0, leftStickAxis.y, 0);
+
+        if (Mathf.Abs(leftStickAxis.y) > Mathf.Abs(leftStickAxis.x) && moveDirection.magnitude > 0.1f)
+            currentDrone.transform.position += moveDirection * 2 * Time.deltaTime;
+        else if (leftStickAxis.x != 0)
+            currentDrone.transform.Rotate(0, leftStickAxis.y * 100f * Time.deltaTime, 0);
+
+
+        moveDirection = new Vector3(rightStickAxis.x, 0, rightStickAxis.y);
 
         if (moveDirection.magnitude > 0.1f)
         {
-            //Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            //currentDrone.transform.rotation = Quaternion.Slerp(currentDrone.transform.rotation, targetRotation, 15f * Time.deltaTime);
-            currentDrone.transform.position += moveDirection * 15 * Time.deltaTime;
+            if (Mathf.Abs(rightStickAxis.y) >= Mathf.Abs(rightStickAxis.x))
+            {
+                currentDrone.transform.position += currentDrone.transform.forward * rightStickAxis.y * 2 * Time.deltaTime;
+            }
+                
+            else
+                currentDrone.transform.position += currentDrone.transform.right * rightStickAxis.x * 2 * Time.deltaTime;
         }
+        
+
+
+        //Vector3 moveDirection = new Vector3(leftStickAxis.x, 0, leftStickAxis.y);
+        //if (moveDirection.magnitude > 1)
+        //    moveDirection.Normalize();
+
+        //moveDirection = currentDrone.transform.TransformDirection(moveDirection);
+        //moveDirection.y = 0; // Keep the movement horizontal
+
+        //if (moveDirection.magnitude > 0.1f)
+        //{
+        //    //Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+        //    //currentDrone.transform.rotation = Quaternion.Slerp(currentDrone.transform.rotation, targetRotation, 15f * Time.deltaTime);
+        //    currentDrone.transform.position += moveDirection * 2 * Time.deltaTime;
+        //}
 
         Debug.LogError($"Moving");
     }
