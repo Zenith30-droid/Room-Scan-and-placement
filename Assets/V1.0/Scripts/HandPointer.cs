@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Meta.XR.MRUtilityKit;
 using UnityEngine;
 using TMPro;
+
+using UnityEngine.XR;
 
 public class HandPointer : MonoBehaviour
 {
@@ -15,14 +18,40 @@ public class HandPointer : MonoBehaviour
     [SerializeField] private float offset;
     [SerializeField] private TextMeshProUGUI data;
     [SerializeField] private GameObject target;
+    [SerializeField] private GameObject bubble;
+    [SerializeField] private int maxAmount;
+
+
+
 
     private Color _originalColor;
     private Renderer _currentRenderer;
 
     void Update()
     {
+        //MRUK.Instance.GetCurrentRoom().GenerateRandomPositionOnSurface(MRUK.SurfaceType.)
+
+        if (maxAmount > 0)
+        {
+            
+            var spawnPos = MRUK.Instance.GetCurrentRoom().GenerateRandomPositionInRoom(0, true);
+
+            if (spawnPos.HasValue)
+            {
+                Instantiate(bubble, spawnPos.Value, Quaternion.identity);
+
+                maxAmount--;
+            }
+                
+
+
+        }
+        
+
         Debug.Log($" Hand pos {righthand.PointerPose.position.ToString()}") ;
         CheckHandPointer(righthand);
+
+        
     }
 
     void CheckHandPointer(OVRHand hand)
@@ -50,18 +79,20 @@ public class HandPointer : MonoBehaviour
         }
         else
         {
-            if (CurrentTarget != null)
+            if (CurrentTarget != null && Vector3.Distance(CurrentTarget.transform.position, target.transform.position) > .2f)
             {
                 //_currentRenderer.material.color = _originalColor;
                 //CurrentTarget = null;
                 //CurrentTarget.transform.position = Vector3.MoveTowards(CurrentTarget.transform.position, target.transform.position, 4*Time.deltaTime);
-
+                
                 CurrentTarget.transform.position = Vector3.Lerp(CurrentTarget.transform.position,
                     target.transform.position, 4 * Time.deltaTime);
 
             }
             UpdateRayVisualization(hand.PointerPose.localPosition, hand.PointerPose.localPosition + hand.PointerPose.forward * 10, false);
         }
+
+        
     }
 
     private void UpdateRayVisualization(Vector3 startPosition, Vector3 endPosition, bool hitSomething)
