@@ -20,7 +20,7 @@ public class HandPintchDetector : MonoBehaviour
         _pinchStrength = hand.GetFingerPinchStrength(OVRHand.HandFinger.Index);
         _isIndexFingerPinching = hand.GetFingerIsPinching(OVRHand.HandFinger.Index);
         _confidence = hand.GetFingerConfidence(OVRHand.HandFinger.Index);
-
+        
         if (handPointer.CurrentTarget)
         {
             Material currentMaterial = handPointer.CurrentTarget.GetComponent<Renderer>().material;
@@ -30,12 +30,21 @@ public class HandPintchDetector : MonoBehaviour
         if (!_hasPinched && _isIndexFingerPinching && _confidence == OVRHand.TrackingConfidence.High && handPointer.CurrentTarget)
         {
             _hasPinched = true;
-            handPointer.CurrentTarget.GetComponent<AudioSource>().PlayOneShot(pinchSound);
+            //handPointer.CurrentTarget.GetComponent<AudioSource>().PlayOneShot(pinchSound);
+
+            Debug.Log("");
+
+            GameManager.Instance.CanMoveDrone = true;
         }
         else if (_hasPinched && !_isIndexFingerPinching)
         {
             _hasPinched = false;
-            handPointer.CurrentTarget.GetComponent<AudioSource>().PlayOneShot(releaseSound);
+            //handPointer.CurrentTarget.GetComponent<AudioSource>().PlayOneShot(releaseSound);
+
+            if(handPointer.CurrentTarget)
+                handPointer.CurrentTarget.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+            GameManager.Instance.CanMoveDrone = false;
         }
 
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+//using System.Numerics;
 using UnityEngine;
 
 
@@ -12,11 +13,19 @@ public class PlayerController : MonoBehaviour
     private bool isMovingForward;
     private bool isMovingHorizontal;
 
+    
+
     public void Update()
     {
-        Move();
+        //Move();
     }
 
+
+    public void GestureMovement(GameObject targetObj, GameObject targetPos)
+    {
+        targetObj.transform.position = Vector3.Lerp(targetObj.transform.position,
+            targetPos.transform.position, 7 * Time.deltaTime);
+    }
 
     private void Move()
     {

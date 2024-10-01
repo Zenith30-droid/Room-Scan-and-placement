@@ -79,14 +79,18 @@ public class HandPointer : MonoBehaviour
         }
         else
         {
-            if (CurrentTarget != null && Vector3.Distance(CurrentTarget.transform.position, target.transform.position) > .2f)
+            Debug.LogError($"err 1 {GameManager.Instance.CanMoveDrone}");
+
+            if (CurrentTarget != null && Vector3.Distance(CurrentTarget.transform.position, target.transform.position) > .2f && GameManager.Instance.CanMoveDrone)
             {
+
+                GameManager.Instance.playerController.GestureMovement(CurrentTarget, target);
                 //_currentRenderer.material.color = _originalColor;
                 //CurrentTarget = null;
                 //CurrentTarget.transform.position = Vector3.MoveTowards(CurrentTarget.transform.position, target.transform.position, 4*Time.deltaTime);
-                
-                CurrentTarget.transform.position = Vector3.Lerp(CurrentTarget.transform.position,
-                    target.transform.position, 4 * Time.deltaTime);
+
+                //CurrentTarget.transform.position = Vector3.Lerp(CurrentTarget.transform.position,
+                //    target.transform.position, 4 * Time.deltaTime);
 
             }
             UpdateRayVisualization(hand.PointerPose.localPosition, hand.PointerPose.localPosition + hand.PointerPose.forward * 10, false);
